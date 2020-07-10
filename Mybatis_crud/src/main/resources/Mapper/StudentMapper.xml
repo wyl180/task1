@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.StudentMapper">
+    <!-- column：数据库的列名 property:要映射到实体类的字段名-->
+    <resultMap id="studentMap" type="student">
+        <!--要映射到实例类的主键ID-->
+        <id column="id" property="id"/>
+        <!--普通属性-->
+        <result column="student_name" property="name"/>
+        <result column="enter_time" property="enterTime"/>
+        <result column="student_number" property="studentNumber"/>
+        <result column="qq" property="qqNumber"/>
+        <result column="school" property="school"/>
+        <result column="study_type" property="type"/>
+        <result column="log_link" property="logLink"/>
+        <result column="slogan" property="slogan"/>
+        <result column="brother" property="brother"/>
+
+    </resultMap>
+    <!--根据id查询-->
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="studentMap">
+        select *from student_task1 where id=#{id}
+    </select>
+    <!--插入学生数据-->
+    <!--keyProperty :返回的主键值赋给实体类的哪个字段-->
+    <!--数据库中的自增主键的列名，默认是数据库表的第一列-->
+    <!--useGeneratedKeys： 是否自动生成主键，默认false-->
+    <insert id="insertStudent" keyProperty="id" keyColumn="id" parameterType="student" useGeneratedKeys="true">
+        insert into student_task1(
+        student_name,enter_time,qq,school,student_number,study_type,log_link,slogan,brother,create_at,update_at)
+         values (
+        #{name},#{enterTime},#{qqNumber},#{school},#{studentNumber},#{type},#{logLink},#{slogan},#{brother},#{createTime},#{updateTime})
+
+    </insert>
+
+    <!--根据姓名模糊查询-->
+    <select id="selectByName" parameterType="java.lang.String" resultMap="studentMap">
+        select *from student_task1 where student_name like   CONCAT(#{name},'%')
+    </select>
+    <!--根据学号模糊查询-->
+    <select id="selectByNumber" parameterType="java.lang.String" resultMap="studentMap">
+        select  *from student_task1 where student_number like CONCAT(#{studentNumber},'%');
+    </select>
+    <!--根据id更新多个列的数据-->
+    <update id="updateById" parameterType="student">
+        update student_task1
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="studentNumber!=null">student_number=#{studentNumber},</if>
+            <if test="school!=null">school=#{school},</if>
+            <if test="qqNumber!=null">qq=#{qqNumber},</if>
+            <if test="type!=null">study_type=#{type},</if>
+            <if test="logLink!=null">log_link=#{logLink},</if>
+            <if test="slogan!=null">slogan=#{slogan},</if>
+            <if test="brother!=null">brother=#{brother},</if>
+            <if test="enterTime!=null">enter_time=#{enterTime},</if>
+            <if test="updateTime!=null">update_at=#{updateTime},</if>
+            <if test="name!=null">student_name=#{name}</if>
+        </trim>
+        where id=#{id}
+    </update>
+    <!--根据id删除数据-->
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from student_task1 where id=#{id}
+    </delete>
+<!--    if/trim代替where(判断参数) - 将实体类不为空的属性作为where条件-->
+    <select id="selectByDynamic" resultMap="studentMap" parameterType="student">
+        select *from student_task1
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="name!=null">
+                student_name like CONCAT(#{name},'%')
+            </if>
+            <if test="school!=null and school!=''">
+                AND school=#{school}
+            </if>
+        </trim>
+    </select>
+
+
+</mapper>
+
+
+
+
+
